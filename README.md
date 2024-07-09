@@ -1,6 +1,6 @@
 # tcpScanner
 Parallel tcp scanner
-## building and Usage example
+## Building and usage example
 ```
 go build tcpScanner.go
 tcpScanner.exe <host> <first port> <last port> <goroutins count>
