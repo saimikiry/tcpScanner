@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"time"
 )
 
 func startWorker(host string, ports_pool <-chan int, open_ports chan<- int) {
@@ -26,7 +27,7 @@ func main() {
 	args := os.Args[1:]
 
 	// Проверка числа аргументов
-	if len(args) != 4 {
+	if len(args) != 5 {
 		fmt.Printf("[Scanner] Incorrect import! Usage example:\n[Scanner] $ scanner.exe <host> <first port> <last port> <goroutins count>\n[Scanner] $ scanner.exe scanme.nmap.org 1 1024 100")
 		return
 	}
@@ -54,6 +55,12 @@ func main() {
 		return
 	}
 
+	duration, err := strconv.Atoi(args[4])
+	if err != nil {
+		fmt.Printf("[Scanner] Incorrect time duration!")
+		return
+	}
+
 	// Создание буферизованного канала для передачи портов воркерам
 	ports_pool := make(chan int, workers_count)
 	defer close(ports_pool)
@@ -71,6 +78,8 @@ func main() {
 	go func() {
 		for i := first_port; i <= last_port; i++ {
 			ports_pool <- i
+			time.Sleep(time.Duration(duration) * time.Millisecond)
+			fmt.Printf("Pushed %d\n", i)
 		}
 	}()
 
